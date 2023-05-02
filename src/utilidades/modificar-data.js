@@ -19,7 +19,7 @@ function crearEquipo(datosEquipo, imagenEquipo) {
       name: datosEquipo.pais,
     },
     tla: tlaEquipo,
-    crestUrl: `/static/imagenes/${imagenEquipo.originalname}`,
+    crestUrl: `http://localhost:8080/imagenes/${imagenEquipo.originalname}`,
     address: datosEquipo.direccion,
     founded: datosEquipo.fundacion,
     venue: datosEquipo.estadio,
