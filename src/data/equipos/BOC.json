@@ -1,0 +1,10 @@
+{
+  "id": "Boca Jr",
+  "name": "Boca Jr",
+  "area": { "name": "Argentina" },
+  "tla": "BOC",
+  "crestUrl": "http://localhost:8080/imagenes/Escudo_del_Club_AtlÃ©tico_Boca_Juniors.png",
+  "address": "Brandsen 805, Buenos Aires, Argentina",
+  "founded": "1904",
+  "venue": "Alberto J. Armando"
+}
