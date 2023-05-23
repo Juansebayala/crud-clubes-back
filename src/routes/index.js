@@ -8,6 +8,7 @@ const {
   eliminarEquipo,
   editarEquipo,
 } = require('../utilidades/modificar-data');
+const URLFront = 'http://localhost:5173/';
 
 const equipos = fs.readFileSync('./data/equipos.json', 'utf-8');
 
@@ -25,8 +26,6 @@ const upload = multer({ storage: storage });
 router.get('/equipos', (req, res) => {
   res.set({
     'content-type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': true,
   });
   res.end(equipos);
 });
@@ -34,8 +33,6 @@ router.get('/equipos', (req, res) => {
 router.get('/equipo/:tlaEquipo', (req, res) => {
   res.set({
     'content-type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': true,
   });
   const equipoSolicitado = req.params.tlaEquipo;
   const equipo = buscarEquipo(equipoSolicitado);
@@ -44,25 +41,45 @@ router.get('/equipo/:tlaEquipo', (req, res) => {
 });
 
 router.post('/equipo/crear-equipo', upload.single('imagen'), (req, res) => {
-  const datosRecibidos = req.body;
-  const imagenSubida = req.file;
-  crearEquipo(datosRecibidos, imagenSubida);
-  res.redirect('http://localhost:5173/equipo/crear-equipo/creado');
+  try {
+    const datosRecibidos = req.body;
+    const imagenSubida = req.file;
+    crearEquipo(datosRecibidos, imagenSubida);
+    res.status(200).json({ exito: true });
+  } catch (error) {
+    console.error('Error creando equipo:', error.message);
+    res.status(500).json({ exito: false });
+  }
 });
 
 router.put('/equipo/:tlaEquipo/editar', upload.single('imagen'), (req, res) => {
   res.set({
     'content-type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': true,
   });
-  const tlaEquipo = req.params.tlaEquipo;
-  const datosRecibidos = req.body;
-  const imagenSubida = req.file;
-  editarEquipo(tlaEquipo, datosRecibidos, imagenSubida);
-  const datosEquipo = buscarEquipo(tlaEquipo);
-  const stringEquipo = JSON.stringify(datosEquipo);
-  res.end(stringEquipo);
+  try {
+    const tlaEquipo = req.params.tlaEquipo;
+    const datosRecibidos = req.body;
+    const imagenSubida = req.file;
+    console.log(datosRecibidos);
+    editarEquipo(tlaEquipo, datosRecibidos, imagenSubida);
+    res.status(200).json({ exito: true });
+  } catch (error) {
+    console.error('Error creando equipo:', error.message);
+    res.status(500).json({ exito: false });
+  }
+});
+
+router.delete('/equipo/:tlaEquipo/eliminar', (req, res) => {
+  try {
+    const tlaEquipo = req.params.tlaEquipo;
+    const equipo = buscarEquipo(tlaEquipo);
+    const imagenEquipo = equipo.crestUrl.split('imagenes/')[1];
+    eliminarEquipo(tlaEquipo, imagenEquipo);
+    res.status(200).json({ exito: true });
+  } catch (e) {
+    console.error('Error creando equipo:', error.message);
+    res.status(500).json({ exito: false });
+  }
 });
 
 module.exports = router;

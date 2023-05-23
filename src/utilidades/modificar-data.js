@@ -2,10 +2,10 @@ const fs = require('fs');
 const equipos = fs.readFileSync('./data/equipos.json', 'utf-8');
 const json_equipos = JSON.parse(equipos);
 
-function obtenerDatosEquipo(idEquipo) {
+function obtenerDatosEquipo(tlaEquipo) {
   for (let i = 0; i < json_equipos.length; i++) {
-    if (idEquipo == json_equipos[i].id) {
-      return [i, json_equipos[i].tla];
+    if (tlaEquipo == json_equipos[i].tla) {
+      return i;
     }
   }
 }
@@ -19,7 +19,7 @@ function crearEquipo(datosEquipo, imagenEquipo) {
       name: datosEquipo.pais,
     },
     tla: tlaEquipo,
-    crestUrl: `http://localhost:8080/imagenes/${imagenEquipo.originalname}`,
+    crestUrl: `http://localhost:3000/static/imagenes/${imagenEquipo.originalname}`,
     address: datosEquipo.direccion,
     founded: datosEquipo.fundacion,
     venue: datosEquipo.estadio,
@@ -31,8 +31,8 @@ function crearEquipo(datosEquipo, imagenEquipo) {
   fs.writeFileSync(`./data/equipos/${tlaEquipo}.json`, equipoAgregado, 'utf-8');
 }
 
-function editarEquipo(idEquipo, datosEquipo, imagenEquipo) {
-  const [posicionEquipo, tlaEquipo] = obtenerDatosEquipo(idEquipo);
+function editarEquipo(tlaEquipo, datosEquipo, imagenEquipo) {
+  const posicionEquipo = obtenerDatosEquipo(tlaEquipo);
   const nuevosDatos = {
     id: datosEquipo.nombre,
     name: datosEquipo.nombre,
@@ -40,7 +40,7 @@ function editarEquipo(idEquipo, datosEquipo, imagenEquipo) {
       name: datosEquipo.pais,
     },
     tla: tlaEquipo,
-    crestUrl: `/static/imagenes/${imagenEquipo.originalname}`,
+    crestUrl: `http://localhost:3000/static/imagenes/${imagenEquipo.originalname}`,
     address: datosEquipo.direccion,
     founded: datosEquipo.fundacion,
     venue: datosEquipo.estadio,
@@ -56,12 +56,13 @@ function editarEquipo(idEquipo, datosEquipo, imagenEquipo) {
   );
 }
 
-function eliminarEquipo(idEquipo, imagenEquipo) {
-  const [indiceEquipo, tlaEquipo] = obtenerDatosEquipo(idEquipo);
+function eliminarEquipo(tlaEquipo, imagenEquipo) {
+  const indiceEquipo = obtenerDatosEquipo(tlaEquipo);
   json_equipos.splice(indiceEquipo, 1);
   const equiposActualizados = JSON.stringify(json_equipos);
   fs.writeFileSync('./data/equipos.json', equiposActualizados, 'utf-8');
   fs.unlinkSync(`./data/equipos/${tlaEquipo}.json`);
+  fs.unlinkSync(`./uploads/imagenes/${imagenEquipo}`);
 }
 
 exports.crearEquipo = crearEquipo;
